@@ -7,6 +7,9 @@ import okhttp3.*;
 
 import java.io.IOException;
 
+/**
+ * API References: https://docs.thecatapi.com/
+ */
 public class CatService {
 
     OkHttpClient client = new OkHttpClient();
