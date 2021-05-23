@@ -5,7 +5,10 @@ import model.Cat;
 import model.CatFav;
 import okhttp3.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * API References: https://docs.thecatapi.com/
@@ -13,6 +16,29 @@ import java.io.IOException;
 public class CatService {
 
     OkHttpClient client = new OkHttpClient();
+    String API_KEY = "";
+    public CatService(){
+        try {
+            init();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
+    }
+    public void init() throws Exception{
+        Properties prop = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("app.properties");
+        try{
+            prop.load(inputStream);
+            API_KEY = prop.getProperty("API_KEY");
+            if(API_KEY.equals("")){
+                throw new Exception("API KEY not set");
+            }
+        }catch (IOException ex){
+            System.out.println(("property file not found in the classpath"));
+        }
+    }
 
     public String getRandomCatURLImage() throws IOException {
 
@@ -44,7 +70,7 @@ public class CatService {
                 .url("https://api.thecatapi.com/v1/favourites?")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("x-api-key", "8a41dbab-5f95-45fa-8f11-bd14520db953")
+                .addHeader("x-api-key", API_KEY)
                 .build();
         Response response = client.newCall(request).execute();
         return response.body().string();
@@ -54,7 +80,7 @@ public class CatService {
         Request request = new Request.Builder()
                 .url("https://api.thecatapi.com/v1/favourites")
                 .method("GET", null)
-                .addHeader("x-api-key", "8a41dbab-5f95-45fa-8f11-bd14520db953")
+                .addHeader("x-api-key", API_KEY)
                 .build();
         Response response = client.newCall(request).execute();
         String json = response.body().string();
